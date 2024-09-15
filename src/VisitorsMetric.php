@@ -22,6 +22,7 @@ class VisitorsMetric extends Value
     public function calculate(Request $request): ValueResult
     {
         $lookups = [
+            'All' => $this->visitorsAllTime(),
             1 => $this->visitorsToday(),
             'Y' => $this->visitorsYesterday(),
             'LW' =>$this->visitorsLastWeek(),
@@ -112,9 +113,22 @@ class VisitorsMetric extends Value
         ];
     }
 
+    private function visitorsAllTime(): array
+    {
+        $allTime = $this->getAllTime();
+        $currentResults = $this->performQuery('totalUsers', 'year', $allTime['current']);
+        $previousResults = $this->performQuery('totalUsers', 'year', $allTime['previous']);
+
+        return [
+            'previous' => $previousResults->pluck('value')->sum() ?? 0,
+            'result' => $currentResults->pluck('value')->sum() ?? 0,
+        ];
+    }
+
     public function ranges(): array
     {
         return [
+            'All' => 'All Time',
             1 => __('Today'),
             'Y' => __('Yesterday'),
             'LW' => __('Last Week'),

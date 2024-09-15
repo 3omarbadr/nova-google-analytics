@@ -132,4 +132,28 @@ trait MetricDiffTrait
             'previous' => $previous,
         ];
     }
+
+    private function getAllTime() : array
+    {
+        $current = Period::create(
+            Carbon::yesterday()
+                ->clone()
+                ->subYears(1),
+            Carbon::yesterday()
+        );
+
+        $previous = Period::create(
+            Carbon::yesterday()
+                ->clone()
+                ->subYears(2),
+            Carbon::yesterday()
+                ->clone()
+                ->subYears(1)
+        );
+
+        return [
+            'current' => $current,
+            'previous' => $previous,
+        ];
+    }
 }

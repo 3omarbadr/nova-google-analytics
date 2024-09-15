@@ -22,6 +22,7 @@ class PageViewsMetric extends Value
     public function calculate(Request $request): ValueResult
     {
         $lookups = [
+            'All' => $this->pageViewsAllTime(),
             1 => $this->pageViewsToday(),
             'Y' => $this->pageViewsYesterday(),
             'LW' =>$this->pageViewsLastWeek(),
@@ -113,9 +114,22 @@ class PageViewsMetric extends Value
         ];
     }
 
+    private function pageViewsAllTime(): array
+    {
+        $lastThirtyDays = $this->getAllTime();
+        $currentResults = $this->performQuery('screenPageViews', 'year', $lastThirtyDays['current']);
+        $previousResults = $this->performQuery('screenPageViews', 'year', $lastThirtyDays['previous']);
+
+        return [
+            'previous' => $previousResults->pluck('value')->sum() ?? 0,
+            'result' => $currentResults->pluck('value')->sum() ?? 0,
+        ];
+    }
+
     public function ranges(): array
     {
         return [
+            'All' => 'All Time',
             1 => __('Today'),
             'Y' => __('Yesterday'),
             'LW' => __('Last Week'),
